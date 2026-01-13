@@ -2,8 +2,7 @@ out
 dist
 node_modules
 .vscode-test/
-*.vsix
-_tests
+_tests/
 PUBLISHING.md
 .mypy_cache
 .vscode
