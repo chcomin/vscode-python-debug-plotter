@@ -64,9 +64,13 @@ export function activate(context: vscode.ExtensionContext) {
                 'numpyViewer',
                 'Data Viewer',
                 vscode.ViewColumn.Two, 
-                { enableScripts: true }
+                { 
+                    enableScripts: true,
+                    localResourceRoots: [vscode.Uri.joinPath(context.extensionUri, 'media')]
+
+                }
             );
-            currentPanel.webview.html = getWebviewContent();
+            currentPanel.webview.html = getWebviewContent(currentPanel.webview, context.extensionUri);
             
             currentPanel.onDidDispose(() => {
                 currentPanel = undefined;

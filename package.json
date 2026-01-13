@@ -15,7 +15,7 @@
     "commands": [
       {
         "command": "simple-data-viewer.viewImage",
-        "title": "View as Image/Points"
+        "title": "View variable"
       }
     ],
     "menus": {
