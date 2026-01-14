@@ -34,14 +34,14 @@ The extension also support viewing Networkx graphs
 
 ## Installation
 
-**Using the VSCode interface**
-1. Download the .vsix file from the [Releases page](https://github.com/chcomin/simple-data-viewer/releases)
-2. In the Extensions VSCode panel, click on the three dots on the upper right corner and then on "Install from VSIX".
+1. Download the .vsix file from the [Releases page](https://github.com/chcomin/simple-data-viewer/releases) or use wget
 
-**Using the terminal**
 ```bash
 wget https://github.com/chcomin/simple-data-viewer/releases/download/v0.0.1/simple-data-viewer-0.0.1.vsix
 ```
+
+2. In the Extensions VSCode panel, click on the three dots on the upper right corner and then on "Install from VSIX", or install from the terminal
+
 ```bash
 code --install-extension simple-data-viewer-0.0.1.vsix
 ```
