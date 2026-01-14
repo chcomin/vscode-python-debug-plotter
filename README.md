@@ -1,23 +1,42 @@
 # Simple Data Viewer
 
-A lightweight VS Code extension for visualizing PyTorch tensors, NumPy arrays, and NetworkX graphs during Python debugging sessions. No additional Python dependencies required!
+A lightweight VS Code extension for visualizing NumPy arrays and PyTorch tensors during Python debugging sessions. It also supports variables that can be converted to a NumPy array (e.g. a list of points) and NetworkX graphs. Networkx, Pytorch or other dependencies are not required!
 
 ## Features
 
-- **View variables directly from the debug Variables panel** - Right-click any variable and select "View variable"
-- **Support for multiple data types:**
-  - PyTorch tensors
-  - NumPy arrays
-  - NetworkX graphs
-- **Zero Python dependencies** - Only requires the package corresponding to the visualized variable (PyTorch, NumPy, or NetworkX), which should already be installed in your project
-- **Interactive visualization** - Opens in a dedicated webview panel
-- **Works during debugging** - Inspect variables in real-time while stepping through code
+View 2D and multichannel Pytorch and numpy arrays in the debugger. Right-click on a variable and select "View variable"
+
+![Image viewer](assets/image.gif)
+
+<br>
+
+View 2D and 3D point clouds
+
+![Points viewer](assets/points.gif)
+
+<br>
+
+You can explore any tensor or array. For instance, an image in a Bx3xHxW array can be shown by first defining the variable in the debug console (img = batch[7]). The variable can then be viewed as an image
+
+![Batch viewer](assets/batch.gif)
+
+<br>
+
+The extension also support viewing Networkx graphs
+
+![Graph viewer](assets/graph.png)
+
 
 ## Requirements
 
 - VS Code 1.107.0 or higher
 - Python debugger session active
-- At least one of: PyTorch, NumPy, or NetworkX installed in your Python environment
+
+## Installation
+
+1. Download simple-data-viewer-x.vsix from the (release)[release] folder.
+
+2. In the Extensions VSCode panel, click on the three dots on the upper right corner and then on "Install from VSIX".
 
 ## Usage
 
@@ -29,17 +48,50 @@ A lightweight VS Code extension for visualizing PyTorch tensors, NumPy arrays, a
 
 ## Supported Variable Types
 
-- **PyTorch**: `torch.Tensor`
-- **NumPy**: `numpy.ndarray`
-- **NetworkX**: Graph objects
+The full heuristic for automatically detecting and handling point clouds and images is as follows:
 
-## Extension Settings
+```python
+# Detection of PyTorch Tensor-like object (can be on GPU and on computation graph)
+if hasattr(variable, 'cpu') and hasattr(variable, 'detach'):
+    variable = variable.detach().cpu().numpy()
 
-This extension does not require any configuration.
+# Conversion of variable to numpy array
+try:
+    np_array = np.asarray(variable)
+...
 
-## Known Issues
+ndim = np_array.ndim
+shape = np_array.shape
 
-Please report issues at: https://github.com/YOUR_USERNAME/simple-data-viewer/issues
+# Point cloud detection
+if ndim == 2 and shape[1] in [2, 3]:
+    if shape[1] == 2:
+        type = "points"
+    elif shape[1] == 3:
+        type = "points3d"
+
+# Image handling
+elif ndim == 2 or ndim == 3:
+    # Insert channel dimension if ndim == 2
+    # ...
+
+    C, H, W = np_array.shape
+    # Heuristic to detect if channel is first
+    if C in [1, 3, 4] and H > 4 and W > 4:
+        np_array = np.transpose(np_array, (1, 2, 0)) 
+
+    # If integer with range outside [0, 255], the array requires normalization
+    if np_array.dtype.kind == 'i' and (np_array.max() > 255 or np_array.min() < 0):
+        np_array = np_array.astype(np.float32)
+
+    # If float, normalize to [0, 255]
+    if np_array.dtype.kind == 'f':
+        ...
+```
+
+## Future plans
+
+- Visualize 1D array as histogram
 
 ## Release Notes
 
@@ -52,10 +104,3 @@ Initial release of Simple Data Viewer
 - View NetworkX graphs during debugging
 - Right-click context menu in Variables panel
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-This extension is licensed under the MIT License.

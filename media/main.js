@@ -173,7 +173,7 @@ function renderGraphCommon(msg, is3D) {
     const edgeTrace = {
         x: msg.edge_x, y: msg.edge_y,
         mode: 'lines',
-        line: { color: '#888', width: 1 },
+        line: { color: '#586e75b5', width: 1 },
         type: is3D ? 'scatter3d' : 'scatter',
         hoverinfo: 'none'
     };

@@ -77,7 +77,7 @@ export function activate(context: vscode.ExtensionContext) {
             }, null, context.subscriptions);
         }
 
-        const scriptPath = path.join(context.extensionPath, 'debugger_script.py');
+        const scriptPath = path.join(context.extensionPath, 'data_handler.py');
         const scriptContent = fs.readFileSync(scriptPath, 'utf-8');
         const scriptB64 = Buffer.from(scriptContent).toString('base64');
 
