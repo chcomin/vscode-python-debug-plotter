@@ -16,7 +16,7 @@ View 2D and 3D point clouds
 
 <br>
 
-You can explore any tensor or array. For instance, an image in a Bx3xHxW array can be shown by first defining the variable in the debug console (img = batch[7]). The variable can then be viewed as an image
+You can explore any tensor or array. For instance, an image in a Bx3xHxW array can be shown by first defining the variable in the debug console using `img = batch[7]`. The variable can then be viewed as an image
 
 ![Batch viewer](assets/batch.gif)
 
@@ -35,12 +35,14 @@ The extension also support viewing Networkx graphs
 ## Installation
 
 **Using the VSCode interface**
-1. Download the .vsix file from the [Releases page](https://github.com/chcomin/simple-data-viewer/releases/tag/latest)
+1. Download the .vsix file from the [Releases page](https://github.com/chcomin/simple-data-viewer/releases)
 2. In the Extensions VSCode panel, click on the three dots on the upper right corner and then on "Install from VSIX".
 
 **Using the terminal**
 ```bash
 wget https://github.com/chcomin/simple-data-viewer/releases/download/v0.0.1/simple-data-viewer-0.0.1.vsix
+```
+```bash
 code --install-extension simple-data-viewer-0.0.1.vsix
 ```
 
