@@ -7,7 +7,7 @@ let currentPanel: vscode.WebviewPanel | undefined = undefined;
 
 export function activate(context: vscode.ExtensionContext) {
 
-    const disposable = vscode.commands.registerCommand('simple-data-viewer.viewImage', async (variableContext) => {
+    const disposable = vscode.commands.registerCommand('python-debug-plotter.viewVariable', async (variableContext) => {
 
         const session = vscode.debug.activeDebugSession;
         if (!session) {
@@ -15,7 +15,7 @@ export function activate(context: vscode.ExtensionContext) {
             return;
         }
 
-        // We need the frameId to tell the debugger "look for variables in the current function"
+        // Extract frameId from the active stack item
         let frameId: number | undefined;
         const activeItem = vscode.debug.activeStackItem;
         if (activeItem && 'frameId' in activeItem) {
@@ -61,8 +61,8 @@ export function activate(context: vscode.ExtensionContext) {
             currentPanel.reveal(vscode.ViewColumn.Two);
         } else {
             currentPanel = vscode.window.createWebviewPanel(
-                'numpyViewer',
-                'Data Viewer',
+                'pythonDebugPlotter',
+                'Variable Viewer',
                 vscode.ViewColumn.Two, 
                 { 
                     enableScripts: true,
@@ -77,7 +77,7 @@ export function activate(context: vscode.ExtensionContext) {
             }, null, context.subscriptions);
         }
 
-        const scriptPath = path.join(context.extensionPath, 'data_handler.py');
+        const scriptPath = path.join(context.extensionPath, 'python', 'data_handler.py');
         const scriptContent = fs.readFileSync(scriptPath, 'utf-8');
         const scriptB64 = Buffer.from(scriptContent).toString('base64');
 
@@ -94,33 +94,46 @@ export function activate(context: vscode.ExtensionContext) {
 
             let rawResult = response.result;
 
-            // Basic cleanup of quotes around the filename JSON
-            if (rawResult.startsWith("'") && rawResult.endsWith("'")) {rawResult = rawResult.slice(1, -1);}
-            if (rawResult.startsWith('"') && rawResult.endsWith('"')) {rawResult = rawResult.slice(1, -1);}
-            rawResult = rawResult.replace(/\\"/g, '"').replace(/\\'/g, "'");
-
-            // 1. Parse the initial response (which is just { "file_path": "..." })
-            const initialData = JSON.parse(rawResult);
-
-            if (initialData.error) {
-                vscode.window.showErrorMessage("Python Error: " + initialData.error);
-                return;
+            // Remove the outer quotes added by the Python Debugger (repr)
+            // The debugger often returns: ' "{\"file_path\": ...}" '
+            if (rawResult.startsWith("'") && rawResult.endsWith("'")) {
+                rawResult = rawResult.slice(1, -1);
+            } else if (rawResult.startsWith('"') && rawResult.endsWith('"')) {
+                // Rare case: if the inner string had single quotes, python might use double quotes outside
+                rawResult = rawResult.slice(1, -1);
             }
 
-            if (initialData.file_path) {
-                // 2. Read the actual data from the temp file
-                const jsonContent = fs.readFileSync(initialData.file_path, 'utf-8');
-                
-                // 3. Parse the big data
-                const finalData = JSON.parse(jsonContent);
+            try {
 
-                // 4. Send to Webview
-                if (currentPanel) {
-                    currentPanel.webview.postMessage(finalData);
+                const pathData = JSON.parse(rawResult);
+
+                if (pathData.error) {
+                    vscode.window.showErrorMessage("Python Error: " + pathData.error);
+                    return;
                 }
 
-                // Optional: Delete the temp file to keep things clean
-                fs.unlinkSync(initialData.file_path);
+                if (pathData.file_path) {
+                    try {
+                        // Read the actual data from the temp file
+                        const jsonContent = fs.readFileSync(pathData.file_path, 'utf-8');
+                        
+                        // Parse the data
+                        const finalData = JSON.parse(jsonContent);
+
+                        // Send to Webview
+                        if (currentPanel) {
+                            currentPanel.webview.postMessage(finalData);
+                        }
+                    } finally {
+                        if (fs.existsSync(pathData.file_path)) {
+                            // Clean up the temp file
+                            fs.unlinkSync(pathData.file_path);
+                        }
+                    }
+                }
+            } catch (err) {
+                const e = err as Error;
+                vscode.window.showErrorMessage(`Parse Error: ${e.message}. Raw output: ${rawResult}`);
             }
 
         } catch (err) {

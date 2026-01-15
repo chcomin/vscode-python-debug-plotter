@@ -86,9 +86,11 @@ def get_numpy_data(np_array):
 
     if is_1d_array(np_array):
         # 1D array
+        # Replace NaNs with zeros to not break JSON serialization
+        data_list = np.where(np.isnan(np_array), 0, np_array).tolist()
         output_data = {
             "type": "array1d",
-            "data": np_array.tolist(),
+            "data": data_list,
             "shape": np_array.shape
         }
     elif is_point_array(np_array):
@@ -168,7 +170,7 @@ def get_graph_data(graph):
                     if all(key in graph.nodes[n] for n in nodes):
                         pos = {n: graph.nodes[n][key] for n in nodes}
                         break
-                except KeyError: 
+                except Exception: 
                     pass
     
     # Fallback: Compute Spring Layout if no coords found
@@ -335,6 +337,8 @@ def _vscode_extension_extract_data(variable):
         with os.fdopen(fd, 'w') as tmp:
             json.dump(output_data, tmp)
             
+        # Use json.dumps TWICE to ensure the debugger receives a string 
+        # that serves as a valid JSON string literal.
         return json.dumps({"file_path": path})
 
     except Exception as e:

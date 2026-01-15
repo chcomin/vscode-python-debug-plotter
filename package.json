@@ -1,21 +1,22 @@
 {
-  "name": "simple-data-viewer",
-  "displayName": "Simple Data Viewer",
-  "description": "View PyTorch tensors, NumPy arrays, and NetworkX graphs during Python debugging sessions with no additional dependencies.",
+  "name": "python-debug-plotter",
+  "displayName": "Python Debug Plotter: Arrays, Tensors & Graphs",
+  "description": "Debug and plot NumPy arrays, PyTorch tensors, images, and NetworkX graphs instantly. Lightweight & dependency-free.",
   "version": "0.0.1",
   "publisher": "inag-ufscar",
   "author": {
     "name": "Cesar Comin"
   },
+  "icon": "images/icon.png",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/chcomin/simple-data-viewer"
+    "url": "https://github.com/chcomin/vscode-python-debug-plotter"
   },
   "bugs": {
-    "url": "https://github.com/chcomin/simple-data-viewer/issues"
+    "url": "https://github.com/chcomin/vscode-python-debug-plotter/issues"
   },
-  "homepage": "https://github.com/chcomin/simple-data-viewer#readme",
+  "homepage": "https://github.com/chcomin/vscode-python-debug-plotter#readme",
   "keywords": [
     "python",
     "pytorch",
@@ -23,31 +24,36 @@
     "networkx",
     "debugger",
     "visualization",
+    "plot",
     "debug",
     "data viewer",
+    "image viewer",
+    "graph",
+    "point cloud",
     "tensor",
     "array"
   ],
   "engines": {
-    "vscode": "^1.107.0"
+    "vscode": "^1.96.0"
   },
   "categories": [
+    "Visualization",
     "Debuggers",
-    "Visualization"
+    "Data Science"
   ],
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "simple-data-viewer.viewImage",
-        "title": "View variable"
+        "command": "python-debug-plotter.viewVariable",
+        "title": "Plot variable"
       }
     ],
     "menus": {
             "debug/variables/context": [
                 {
-                    "command": "simple-data-viewer.viewImage",
+                    "command": "python-debug-plotter.viewVariable",
                     "group": "navigation"
                 }
             ]
@@ -64,7 +70,7 @@
   "devDependencies": {
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
-    "@types/vscode": "1.107.0",
+    "@types/vscode": "^1.96.0",
     "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2",
     "eslint": "^9.39.2",

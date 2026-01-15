@@ -1,26 +1,28 @@
+# Build and Source Files
 .vscode/**
-.vscode-test/**
 src/**
-.gitignore
-.yarnrc
-vsc-extension-quickstart.md
-**/tsconfig.json
-**/eslint.config.mjs
+out/test/**
+test/**
 **/*.map
 **/*.ts
-**/.vscode-test.*
-_tests/**
-.mypy_cache/**
-.git/**
+
+# Configuration and Tooling
+tsconfig.json
+eslint.config.mjs
+.vscode-test.mjs
+.gitignore
+.vscodeignore
+
+# Temporary and Output Files
+release/**
 *.vsix
+tmp.py
+
+# Documentation & Assets
+assets/**
+!assets/icon.png
+PUBLISHING.md
 
 __pycache__/
 _tests/
 .mypy_cache/
-assets/
-dist/
-node_modules/
-.vscode-test/
-release/
-PUBLISHING.md
-

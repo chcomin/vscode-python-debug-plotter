@@ -1,4 +1,4 @@
-# Simple Data Viewer
+# VSCode Python Debug Plotter
 
 A lightweight VS Code extension for visualizing 1D and 2D NumPy arrays and PyTorch tensors during Python debugging sessions. It also supports variables that can be converted to a NumPy array (e.g. a list of points) and NetworkX graphs. Networkx, Pytorch or other dependencies are not required!
 
@@ -6,39 +6,39 @@ A lightweight VS Code extension for visualizing 1D and 2D NumPy arrays and PyTor
 
 View 1D arrays as histogram
 
-![Histogram viewer](assets/histogram.gif)
+![Histogram viewer](https://raw.githubusercontent.com/chcomin/vscode-python-debug-plotter/main/assets/histogram.gif)
 
 <br>
 
 View 2D (Nx2) and 3D (Nx3) point clouds
 
-![Points viewer](assets/points.gif)
+![Points viewer](https://raw.githubusercontent.com/chcomin/vscode-python-debug-plotter/main/assets/points.gif)
 
 <br>
 
 
-View 2D and multichannel Pytorch and numpy arrays as images. Pillow images and objects that can be converted to numpy are also supported.
+View 2D and multichannel Pytorch and numpy arrays as images (HxW, HxWx3, HxWx1, 3xHxW and 1xHxW). Pillow images and objects that can be converted to numpy using `np.array(data)` is also supported.
 
-![Image viewer](assets/image.gif)
-
-<br>
-
-
-You can explore any ND tensor or array. For instance, an image in a Bx3xHxW array can be shown by first defining the variable in the debug console using `img = batch[7]`. The variable can then be viewed as an image
-
-![Batch viewer](assets/batch.gif)
+![Image viewer](https://raw.githubusercontent.com/chcomin/vscode-python-debug-plotter/main/assets/image.gif)
 
 <br>
 
-The extension also support viewing Networkx graphs
 
-![Graph viewer](assets/graph.gif)
+You can explore any ND tensor or array. For instance, an image in a Bx3xHxW tensor can be shown by first defining the variable in the debug console using `img = batch[7]`. The variable can then be viewed as an image
+
+![Batch viewer](https://raw.githubusercontent.com/chcomin/vscode-python-debug-plotter/main/assets/batch.gif)
+
+<br>
+
+The extension also support viewing Networkx graphs. Actually, any object with a .nodes attribute containing a list of node indices and a .edges attribute containg an edgelist is supported.
+
+![Graph viewer](https://raw.githubusercontent.com/chcomin/vscode-python-debug-plotter/main/assets/graph.gif)
 
 <br>
 
 Compound data that cannot be plotted is printed with rich information. For instance, a list with a torch tensor on the GPU, a dictionary with an array, a tensor and a pillow image and a list of 10 arrays is shown as
 
-![Data viewer](assets/compound.png)
+![Data viewer](https://github.com/chcomin/vscode-python-debug-plotter/blob/main/assets/compound.png)
 
 
 ## Requirements
@@ -48,16 +48,16 @@ Compound data that cannot be plotted is printed with rich information. For insta
 
 ## Installation
 
-1. Download the .vsix file from the [Releases page](https://github.com/chcomin/simple-data-viewer/releases) or use wget
+1. Download the .vsix file from the [Releases page](https://github.com/chcomin/vscode-python-debug-plotter/releases) or use wget
 
 ```bash
-wget https://github.com/chcomin/simple-data-viewer/releases/download/v0.0.1/simple-data-viewer-0.0.1.vsix
+wget https://github.com/chcomin/vscode-python-debug-plotter/releases/download/v0.0.1/vscode-python-debug-plotter-0.0.1.vsix
 ```
 
 2. In the Extensions VSCode panel, click on the three dots on the upper right corner and then on "Install from VSIX", or install from the terminal
 
 ```bash
-code --install-extension simple-data-viewer-0.0.1.vsix
+code --install-extension vscode-python-debug-plotter-0.0.1.vsix
 ```
 
 ## Usage
