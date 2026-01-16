@@ -74,10 +74,8 @@
     "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2",
     "eslint": "^9.39.2",
+    "plotly.js": "^3.3.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.52.0"
-  },
-  "dependencies": {
-    "plotly.js": "^3.3.1"
   }
 }

@@ -6,3 +6,4 @@ _tests/
 PUBLISHING.md
 .mypy_cache/
 __pycache__/
+release/
