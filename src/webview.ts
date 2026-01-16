@@ -10,8 +10,16 @@ export function getWebviewContent(webview: vscode.Webview, extensionUri: vscode.
     // 1. Allows loading styles from the extension
     // 2. Allows loading scripts from the extension AND the Plotly CDN
     // 3. Allows data: images (for the canvas)
-    const csp = `default-src 'none'; img-src 'self' data:; style-src ${webview.cspSource} 'unsafe-inline'; script-src ${webview.cspSource} 'unsafe-inline' https://cdn.plot.ly;`;
-
+    //const csp = `default-src 'none'; img-src 'self' data:; style-src ${webview.cspSource} 'unsafe-inline'; script-src ${webview.cspSource} 'unsafe-inline' https://cdn.plot.ly;`;
+    const csp = `
+    default-src 'none';
+    style-src ${webview.cspSource} 'unsafe-inline';
+    script-src ${webview.cspSource} 'unsafe-inline' 'unsafe-eval' https://cdn.plot.ly;
+    img-src ${webview.cspSource} https: data:;
+    worker-src blob:; 
+    connect-src https://cdn.plot.ly;
+    `;
+    
     return `<!DOCTYPE html>
 <html lang="en">
 <head>

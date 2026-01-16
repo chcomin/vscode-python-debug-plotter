@@ -102,6 +102,7 @@ def get_numpy_data(np_array):
     np_array = np_array.squeeze()
     ndim = np_array.ndim
     shape = np_array.shape
+    dtype = np_array.dtype
 
     if is_1d_array(np_array):
         # 1D array
@@ -166,7 +167,7 @@ def get_numpy_data(np_array):
         
         output_data = {
             "type": "image",
-            "dtype": str(np_array.dtype),
+            "dtype": str(dtype),
             "shape": np_array.shape,
             "data": b64_data,
             "orig_min": orig_min,

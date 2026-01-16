@@ -75,7 +75,7 @@ function renderImage(msg) {
     const vMax = msg.orig_max !== undefined ? msg.orig_max : 255;
     const range = vMax - vMin;
 
-    status.textContent = `Image: ${msg.dtype} [${w}x${h}x${channels}]`;
+    status.textContent = `Image: ${msg.dtype} [${w}x${h}x${channels}], min: ${fmt(vMin)}, max: ${fmt(vMax)}`;
 
     // 1. Prepare Flat Data for Fast Lookup
     const cleanB64 = msg.data.replace(/[^A-Za-z0-9+/=]/g, "");
@@ -107,10 +107,12 @@ function renderImage(msg) {
 
     // 3. Setup Plotly Layout
     const layout = {
-        margin: { t: 30, l: 30, r: 30, b: 30 },
-        xaxis: { range: [0, w], showgrid: false, zeroline: false, side: 'top' },
+        margin: { t: 0, l: 0, r: 0, b: 0 },
+        //xaxis: { range: [0, w], showgrid: false, zeroline: false, side: 'top' },
+        xaxis: { visible: false,  range: [0, w] },        
         // Note: range [h, 0] sets 'h' at the visual bottom, '0' at top
-        yaxis: { range: [h, 0], showgrid: false, zeroline: false, scaleanchor: 'x' },
+        //yaxis: { range: [h, 0], showgrid: false, zeroline: false, scaleanchor: 'x' },
+        yaxis: { visible: false, range: [h, 0],  scaleanchor: 'x' },
         images: [{
             source: imageSource,
             xref: "x", yref: "y",
@@ -124,7 +126,14 @@ function renderImage(msg) {
         hovermode: false
     };
 
-    Plotly.newPlot(plotDiv, [], layout, { scrollZoom: true, responsive: true })
+    const config = {
+        responsive: true,
+        scrollZoom: true,
+        modeBarButtonsToRemove: ['autoScale2d'],
+        displaylogo: false
+    };
+
+    Plotly.newPlot(plotDiv, [], layout, config)
     .then(gd => {
         
         // 4. Robust Mouse Event Listener
@@ -177,14 +186,14 @@ function renderImage(msg) {
                     const rawVal = bytes[fileIdx];
                     const valNorm = rawVal / 255.0;
                     const originalVal = (valNorm * range) + vMin;
-                    text += originalVal.toFixed(4);
+                    text += fmt(originalVal);
                 } else {
                     const vals = [];
                     for(let c=0; c<channels; c++) {
                         const rawVal = bytes[fileIdx+c];
                         const valNorm = rawVal / 255.0;
                         const originalVal = (valNorm * range) + vMin;
-                        vals.push(originalVal.toFixed(3));
+                        vals.push(fmt(originalVal));
                     }
                     text += `(${vals.join(', ')})`;
                 }
@@ -228,9 +237,12 @@ function getOrCreateTooltip() {
 }
 
 function renderPoints2D(msg) {
+
+    const markerSize = 5;
+
     const plotDiv = document.getElementById('plot-container');
     const count = msg.data.length;
-    document.getElementById('status').textContent = `Point Cloud: ${count} points`;
+    document.getElementById('status').textContent = `Number of points: ${count}`;
     
     const x = new Float32Array(count);
     const y = new Float32Array(count);
@@ -239,11 +251,13 @@ function renderPoints2D(msg) {
         y[i] = msg.data[i][1];
     }
 
+    const traceType = count < 5000 ? 'scatter' : 'scattergl';
+
     const trace = {
         x: x, y: y,
         mode: 'markers',
-        type: 'scatter', 
-        marker: { size: 5, opacity: 0.8 }
+        type: traceType, 
+        marker: { size: markerSize, opacity: 0.8 }
     };
 
     const layout = {
@@ -253,15 +267,23 @@ function renderPoints2D(msg) {
         xaxis: { gridcolor: '#444', zerolinecolor: '#666' },
         yaxis: { scaleanchor: 'x', gridcolor: '#444', zerolinecolor: '#666' },
         plot_bgcolor: "#1e1e1e", paper_bgcolor: "#1e1e1e", font: { color: "#ccc" },
-        hovermode: count > 5000 ? false : 'closest'
+        hovermode: 'closest'
     };
-    Plotly.newPlot(plotDiv, [trace], layout, { scrollZoom: true, responsive: true });
+
+    const config = {
+        responsive: true,
+        scrollZoom: true,
+        modeBarButtonsToRemove: ['toImage', 'select2d', 'lasso2d', 'autoScale2d'],
+        displaylogo: false
+    };
+
+    Plotly.newPlot(plotDiv, [trace], layout, config);
 }
 
 function renderPoints3D(msg) {
     const plotDiv = document.getElementById('plot-container');
     const count = msg.data.length;
-    document.getElementById('status').textContent = `3D Cloud: ${count} points`;
+    document.getElementById('status').textContent = `Number of points: ${count}`;
     
     const x = new Float32Array(count);
     const y = new Float32Array(count);
@@ -277,6 +299,7 @@ function renderPoints3D(msg) {
         mode: 'markers',
         type: 'scatter3d',
         marker: { size: 3, color: z, colorscale: 'Viridis', opacity: 0.8 }
+        
     };
 
     const layout = {
@@ -291,7 +314,15 @@ function renderPoints3D(msg) {
         },
         paper_bgcolor: "#1e1e1e", font: { color: "#ccc" }
     };
-    Plotly.newPlot(plotDiv, [trace], layout, { responsive: true });
+
+    const config = {
+        responsive: true,
+        scrollZoom: true,
+        modeBarButtonsToRemove: ['toImage', 'resetCameraLastSave3d'],
+        displaylogo: false
+    };
+
+    Plotly.newPlot(plotDiv, [trace], layout, config);
 }
 
 function renderArray1D(msg) {
@@ -394,8 +425,28 @@ function renderGraphCommon(msg, is3D) {
         layout.dragmode = "pan";
     }
 
-    Plotly.newPlot(plotDiv, traces, layout, { scrollZoom: true, responsive: true });
+    const config = {
+        responsive: true,
+        scrollZoom: true,
+        modeBarButtonsToRemove: ['toImage', 'resetCameraLastSave3d'],
+        displaylogo: false
+    };
+
+    Plotly.newPlot(plotDiv, traces, layout, config);
 }
+
+// Helper function to format based on magnitude
+const fmt = (n) => {
+  const abs = Math.abs(n);
+  
+  if (n === 0) {return "0.000";}
+
+  if (abs < 0.001 || abs > 1000) {
+    return n.toExponential(3); // Scientific notation with 3 decimals
+  }
+
+  return n.toFixed(3);
+};
 
 // 4. Initialization Loop
 // Check every 50ms if Plotly has finished loading from the CDN
