@@ -41,11 +41,11 @@ def is_point_array(np_array):
     return np_array.ndim == 2 and np_array.shape[1] in [2, 3]
 
 def is_tensor_like_pytorch(variable):
-    """Check if a variable is a PyTorch tensor."""
-    return hasattr(variable, 'cpu') and hasattr(variable, 'detach')
+    """Check if a variable behaves like a PyTorch tensor."""
+    return hasattr(variable, 'cpu') and hasattr(variable, 'detach') and hasattr(variable, 'numpy')
 
-def is_tensor_like_tensorflow(variable):
-    """Check if a variable is a TensorFlow tensor."""
+def has_numpy_conversion(variable):
+    """Check if a variable has builtin numpy conversion."""
     return hasattr(variable, 'numpy')
 
 def is_graph_like(variable):
@@ -79,7 +79,7 @@ def get_data(variable):
         return get_graph_data(variable)
     elif is_tensor_like_pytorch(variable):
         variable = variable.detach().cpu().numpy()
-    elif is_tensor_like_tensorflow(variable):
+    elif has_numpy_conversion(variable):
         variable = variable.numpy()
     
     is_plottable = is_plottable_array(variable)
@@ -139,6 +139,9 @@ def get_numpy_data(np_array):
             np_array = np_array.transpose((1, 2, 0)) # type: ignore
     
         # Intensity normalization
+        # Capture original stats
+        orig_min = float(np_array.min())
+        orig_max = float(np_array.max())
 
         # If integer with range outside [0, 255], the array requires normalization
         if np_array.dtype.kind == 'i' and (np_array.max() > 255 or np_array.min() < 0):
@@ -165,7 +168,9 @@ def get_numpy_data(np_array):
             "type": "image",
             "dtype": str(np_array.dtype),
             "shape": np_array.shape,
-            "data": b64_data
+            "data": b64_data,
+            "orig_min": orig_min,
+            "orig_max": orig_max            
         }
     else:
         raise ValueError(f"Numpy array shape {shape} not supported for visualization.")

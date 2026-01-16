@@ -7,7 +7,7 @@ let currentPanel: vscode.WebviewPanel | undefined = undefined;
 
 export function activate(context: vscode.ExtensionContext) {
 
-    const disposable = vscode.commands.registerCommand('python-debug-plotter.viewVariable', async (variableContext) => {
+    const disposable = vscode.commands.registerCommand('python-debug-plotter.plotVariable', async (variableContext) => {
 
         const session = vscode.debug.activeDebugSession;
         if (!session) {

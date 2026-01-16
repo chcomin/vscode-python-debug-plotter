@@ -43,7 +43,7 @@ Compound data that cannot be plotted is printed with rich information. For insta
 
 ## Requirements
 
-- VS Code 1.107.0 or higher
+- VS Code 1.96.0 or higher
 - Python debugger session active
 
 ## Installation
@@ -65,7 +65,7 @@ code --install-extension vscode-python-debug-plotter-0.0.1.vsix
 1. Start a Python debugging session
 2. Set a breakpoint and pause execution
 3. In the Variables panel, right-click on a PyTorch tensor, NumPy array, or NetworkX graph
-4. Select "View variable" from the context menu
+4. Select "Plot variable" from the context menu
 5. The data will be visualized in a new panel
 
 ## Supported Variable Types
@@ -97,10 +97,6 @@ def is_image_array(np_array):
             is_image = True
     return is_image
 
-def is_tensor_like(variable):
-    """Check if a variable behaves like a Pytorch tensor."""
-    return hasattr(variable, 'cpu') and hasattr(variable, 'detach')   
-
 def is_graph_like(variable):
     """Check if a variable has the attributes nodes and edges."""
     return hasattr(variable, "nodes") and hasattr(variable, "edges")
@@ -124,6 +120,7 @@ Second release
 
 - View 1D arrays as histogram
 - View complex nested lists as a string with rich information
+- Some optimizations to reduce extension size (currently 52 kb!)
 
 ### 0.0.1
 
