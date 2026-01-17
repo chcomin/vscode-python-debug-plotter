@@ -22,11 +22,26 @@ window.addEventListener('resize', () => {
     }
 });
 
+function resetPlotContainer() {
+    const tooltip = document.getElementById('custom-tooltip');
+    if (tooltip) {
+        tooltip.style.display = 'none'; // Force hide the tooltip
+    }
+
+    const oldDiv = document.getElementById('plot-container');
+    if (oldDiv) {
+        // Cloning the node removes all event listeners attached via addEventListener
+        const newDiv = oldDiv.cloneNode(false); 
+        oldDiv.parentNode.replaceChild(newDiv, oldDiv);
+    }
+}
 
 // 2. Logic to handle the data once Plotly is ready
 function routeMessage(msg) {
 
     document.getElementById('status').textContent = "Rendering...";
+
+    resetPlotContainer();
 
     requestAnimationFrame(() => {
         try {

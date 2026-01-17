@@ -100,7 +100,8 @@ export function activate(context: vscode.ExtensionContext) {
         let response: any; 
 
         try {
-            const pythonOneLiner = `[exec(__import__('base64').b64decode('${scriptB64}').decode('utf-8')), _vscode_extension_extract_data(${variableName})][-1]`;
+            //const pythonOneLiner = `[exec(__import__('base64').b64decode('${scriptB64}').decode('utf-8')), _vscode_extension_extract_data(${variableName})][-1]`;
+            const pythonOneLiner = `(lambda d: [exec(__import__('base64').b64decode('${scriptB64}').decode('utf-8'), d), d['_vscode_extension_extract_data'](${variableName})][-1])({})`;
 
             response = await session.customRequest('evaluate', {
                 expression: pythonOneLiner,

@@ -2,7 +2,7 @@ out/
 dist/
 node_modules/
 .vscode-test/
-_tests/
+_dev/
 PUBLISHING.md
 .mypy_cache/
 __pycache__/

@@ -4,35 +4,15 @@ A lightweight VS Code extension for visualizing 1D and 2D NumPy arrays and PyTor
 
 ## Features
 
-View 1D arrays as histogram
+View 2D single and three channel arrays as images, Nx2 and Nx3 arrays as point clouds, networkx graphs and 1D arrays as hisograms
 
-![Histogram viewer](https://raw.githubusercontent.com/chcomin/vscode-python-debug-plotter/main/assets/histogram.gif)
-
-<br>
-
-View 2D (Nx2) and 3D (Nx3) point clouds
-
-![Points viewer](https://raw.githubusercontent.com/chcomin/vscode-python-debug-plotter/main/assets/points.gif)
+![Histogram viewer](https://raw.githubusercontent.com/chcomin/vscode-python-debug-plotter/main/assets/showcase1.gif)
 
 <br>
-
-
-View 2D and multichannel Pytorch and numpy arrays as images (HxW, HxWx3, HxWx1, 3xHxW and 1xHxW). Pillow images and objects that can be converted to numpy using `np.array(data)` is also supported.
-
-![Image viewer](https://raw.githubusercontent.com/chcomin/vscode-python-debug-plotter/main/assets/image.gif)
-
-<br>
-
 
 You can explore any ND tensor or array. For instance, an image in a Bx3xHxW tensor can be shown by first defining the variable in the debug console using `img = batch[7]`. The variable can then be viewed as an image
 
-![Batch viewer](https://raw.githubusercontent.com/chcomin/vscode-python-debug-plotter/main/assets/batch.gif)
-
-<br>
-
-The extension also support viewing Networkx graphs. Actually, any object with a .nodes attribute containing a list of node indices and a .edges attribute containg an edgelist is supported.
-
-![Graph viewer](https://raw.githubusercontent.com/chcomin/vscode-python-debug-plotter/main/assets/graph.gif)
+![Batch viewer](https://raw.githubusercontent.com/chcomin/vscode-python-debug-plotter/main/assets/showcase2.gif)
 
 <br>
 
@@ -114,17 +94,25 @@ if np_array.dtype.kind == 'f':
 
 ## Release Notes
 
+### 1.0
+
+First full release
+
+- Significantly improved the appearance of the plots
+- Significantly improved the performance
+- Many bug fixes
+
 ### 0.0.2
 
-Second release
+Second beta release
 
 - View 1D arrays as histogram
 - View complex nested lists as a string with rich information
-- Some optimizations to reduce extension size (currently 52 kb!)
+- Some optimizations to reduce extension size
 
 ### 0.0.1
 
-Initial release of Simple Data Viewer
+Initial beta release
 
 - View PyTorch tensors during debugging
 - View NumPy arrays during debugging
