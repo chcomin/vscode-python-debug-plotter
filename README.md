@@ -60,20 +60,13 @@ The full heuristic for automatically detecting and handling each data type is th
 * Any variable that supports `np.asarray(variable)` or `variable.numpy()` is converted to a numpy array. So, pillow images and Tensorflow tensors are supported.
 * Everything else is displayed as a string.
 
-
-Array intensity normalization when showing as image
-
-* If the dtype of the array is `float`, or `integer` with range outside [0, 255], the array is normalized to [0, 255].
-* If you do not want normalization, convert to integer in the [0, 255] range before visualizing. 
-* The tooltip shows the **original** pixel values, not the normalzied ones.
-* Tip: Binary or label masks may be hard to see. Convert them to float for automatic normalization.
-
 ## Release Notes
 
 ### 1.0
 
 First full release
 
+- Fixed rouding errors in the image tooltip
 - Significantly improved the appearance of the plots
 - Significantly improved the performance
 - Many bug fixes

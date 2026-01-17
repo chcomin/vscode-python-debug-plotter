@@ -170,7 +170,12 @@ function renderImage(msg) {
     Plotly.newPlot(plotDiv, [], layout, config)
     .then(gd => {
         
-        // 4. Robust Mouse Event Listener
+        applyNearestNeighbor(gd);
+
+        gd.on('plotly_afterplot', () => {
+            applyNearestNeighbor(gd);
+        });
+
         gd.addEventListener('mousemove', function(evt) {
             const rect = gd.getBoundingClientRect();
             
@@ -262,6 +267,21 @@ function getOrCreateTooltip() {
         document.body.appendChild(tooltip);
     }
     return tooltip;
+}
+
+/**
+ * Helper function to force nearest-neighbor interpolation 
+ * on all images within a Plotly graph div.
+ */
+function applyNearestNeighbor(graphDiv) {
+    const images = graphDiv.querySelectorAll('image');
+    
+    images.forEach(img => {
+        // 'pixelated' is for Chrome/Edge (VSCode's engine)
+        // 'crisp-edges' is a fallback for Firefox
+        img.style.imageRendering = 'pixelated'; 
+        img.style.imageRendering = '-moz-crisp-edges'; 
+    });
 }
 
 function renderPoints2D(msg) {
