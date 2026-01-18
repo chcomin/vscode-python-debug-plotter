@@ -42,7 +42,7 @@ def is_point_array(np_array):
 
 def is_tensor_like_pytorch(variable):
     """Check if a variable behaves like a PyTorch tensor."""
-    return hasattr(variable, 'cpu') and hasattr(variable, 'detach') and hasattr(variable, 'numpy')
+    return hasattr(variable, 'cpu') and hasattr(variable, 'detach')
 
 def has_numpy_conversion(variable):
     """Check if a variable has builtin numpy conversion."""
@@ -77,9 +77,9 @@ def get_data(variable):
 
     if is_graph_like(variable):
         return get_graph_data(variable)
-    elif is_tensor_like_pytorch(variable):
-        variable = variable.detach().cpu().numpy()
-    elif has_numpy_conversion(variable):
+    if is_tensor_like_pytorch(variable):
+        variable = variable.detach().cpu()
+    if _has_numpy and has_numpy_conversion(variable):
         variable = variable.numpy()
     
     is_plottable = is_plottable_array(variable)
@@ -326,17 +326,45 @@ def _format_recursive(obj: Any, indent: int, depth_limit: int = 6) -> str:
         if length == 0:
             return f"{name}{{}}"
             
-        if length <= 4:
+        # Check for Homogeneity
+        # We grab values to check if they all share the same type
+        values = list(obj.values())
+        first_type = type(values[0])
+        is_homogeneous = all(type(v) is first_type for v in values)
+
+        # Set Thresholds based on Homogeneity
+        if is_homogeneous:
+            # If all items have the same type and there are more than 4 items,
+            # we show only 1 item to give a quick preview of the type.
+            print_limit = 4
+            items_to_show = 4 
+        else:
+            # Heterogeneous dicts get more items shown. But if more than 10 items,
+            # we still truncate.
+            print_limit = 10
+            items_to_show = 10
+
+        if length <= print_limit:
+            # Print all items
             lines = [f"{name}[{length}]"]
             for k, v in obj.items():
                 val_str = _format_recursive(v, indent + 1)
                 lines.append(f"{prefix}  '{k}': {val_str}")
             return "\n".join(lines)
         else:
-            first_key, first_val = next(iter(obj.items()))
-            header = f"{name}[{length}]"
-            val_str = _format_recursive(first_val, indent + 1)
-            return f"{header} containing:\n{prefix}  '{first_key}': {val_str}\n{prefix}  ... ({length-1} more items)"
+            # Print truncated list
+            lines = [f"{name}[{length}] containing:"]
+            # Convert to list to slice safely by index
+            items = list(obj.items())
+            
+            for i in range(items_to_show):
+                k, v = items[i]
+                val_str = _format_recursive(v, indent + 1)
+                lines.append(f"{prefix}  '{k}': {val_str}")
+                
+            remaining = length - items_to_show
+            lines.append(f"{prefix}  ... ({remaining} more items)")
+            return "\n".join(lines)
 
     # CASE E: Iterables (List, Tuple)
     elif isinstance(obj, (list, tuple)):
@@ -346,17 +374,41 @@ def _format_recursive(obj: Any, indent: int, depth_limit: int = 6) -> str:
         if length == 0:
             return f"{name}[]"
         
-        if length <= 4:
+        # Check for Homogeneity
+        first_type = type(obj[0])
+        is_homogeneous = all(type(x) is first_type for x in obj)
+
+        # Set Thresholds
+        if is_homogeneous:
+            # Same types: strict limit (4), truncates heavily (shows 1)
+            print_limit = 4
+            items_to_show = 1
+        else:
+            # Mixed types: loose limit (10), truncates lightly (shows 10)
+            print_limit = 10
+            items_to_show = 10
+
+        # Print
+        if length <= print_limit:
+            # Print ALL items
             lines = [f"{name}[{length}]"]
             for i, item in enumerate(obj):
                 val_str = _format_recursive(item, indent + 1)
                 lines.append(f"{prefix}  ({i}): {val_str}")
             return "\n".join(lines)
         else:
+            # Print truncated list
             header = f"{name}[{length}]"
-            inner_str = _format_recursive(obj[0], indent + 1)
-            return f"{header} containing:\n{prefix}  (0): {inner_str}\n{prefix}  ... ({length-1} more items)"
-
+            lines = [f"{header} containing:"]
+            
+            for i in range(items_to_show):
+                val_str = _format_recursive(obj[i], indent + 1)
+                lines.append(f"{prefix}  ({i}): {val_str}")
+                
+            remaining = length - items_to_show
+            lines.append(f"{prefix}  ... ({remaining} more items)")
+            return "\n".join(lines)
+        
     # CASE F: Dataclass
     elif is_dataclass(obj):
         lines = [f"{obj.__class__.__name__}"]
