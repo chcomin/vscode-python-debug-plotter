@@ -38,6 +38,12 @@ You can explore any ND array or tensor by first creating one of the primitives a
 
 <br>
 
+The visualization is automatically updated while steping through the code.
+
+![Live update](https://raw.githubusercontent.com/chcomin/vscode-python-debug-plotter/main/assets/live.gif)
+
+<br>
+
 Compound data that cannot be plotted is printed with rich information. For instance, a list with a torch tensor on the GPU, a dictionary with an array, a tensor and a pillow image and a list of 10 arrays is shown as
 
 ![Data viewer](https://raw.githubusercontent.com/chcomin/vscode-python-debug-plotter/refs/heads/main/assets/compound.png)

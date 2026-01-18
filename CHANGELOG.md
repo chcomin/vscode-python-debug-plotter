@@ -1,6 +1,11 @@
 # Change Log
 
-## 1.0
+## 1.1.0
+
+- Added automatic update of plot while steps through code
+- The plot now closes when the debug session ends
+
+## 1.0.0
 
 First full release
 
